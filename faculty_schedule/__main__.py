@@ -1,8 +1,8 @@
 from database_opener import database_opener as do
 import tkinter as tk
 from tkinter import messagebox
-from frames import *
-from frame_manager import FrameManager  # Import the FrameManager class
+from views.frames import *
+from views.frame_manager import FrameManager  # Import the FrameManager class
 
 # Start Apache and MySQL
 do.start_apache_mysql()  # Use this to start MySQL and Apache
