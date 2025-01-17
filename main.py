@@ -1,6 +1,4 @@
-
-
-from subfolder import database_opener as do
+from database_opener import database_opener as do
 import tkinter as tk
 from tkinter import messagebox
 
