@@ -1,31 +1,38 @@
+from database_opener import database_opener as do
 import tkinter as tk
 from tkinter import messagebox
+from frames import *
+from frame_manager import FrameManager  # Import the FrameManager class
 
-
-# do.start_apache_mysql() #use this to start mysql and apache
-# do.stop_apache_mysql() #use this to stop mysql and apache
+# Start Apache and MySQL
+do.start_apache_mysql()  # Use this to start MySQL and Apache
+# do.stop_apache_mysql()  # Use this to stop MySQL and Apache
 
 # Function to handle the window close event
 def on_closing():
     # Ask the user for confirmation before closing
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        # do.stop_apache_mysql() #use this to stop mysql and apache
+        do.stop_apache_mysql()  # Use this to stop MySQL and Apache
         window.destroy()  # Close the window
 
+# Create the main window
 window = tk.Tk()
 
 # Set the window title
 window.title("Faculty Scheduler")
 
 # Set the window size
-window.geometry("400x300")
+window.geometry(f"{int(window.winfo_screenwidth() * 0.8)}x{int(window.winfo_screenheight() * 0.8)}")
 
-# Add a label widget
-label = tk.Label(window, text="Hello, world!")
-label.pack(pady=20)
+# Create the FrameManager instance
+frame_manager = FrameManager(window)
+
+# Show the SearchFrame as the initial frame
+frame_manager.show_frame(SearchFrame)
 
 # Bind the close event to the on_closing function
 window.protocol("WM_DELETE_WINDOW", on_closing)
+
 
 def main():
     # Create the main window
