@@ -6,6 +6,8 @@ from .utils.frames import FrameManager  # Import the FrameManager class
 from .views import SearchFrame
 
 
+# TODO: Add watchdog to monitor files for changes
+
 # Start Apache and MySQL
 # do.start_apache_mysql()  # Use this to start MySQL and Apache
 # do.stop_apache_mysql()  # Use this to stop MySQL and Apache

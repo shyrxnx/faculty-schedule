@@ -1,8 +1,9 @@
 import tkinter as tk
-from tkinter import ttk
+
 
 class FrameManager:
     """Manages switching between frames."""
+
     def __init__(self, master):
         self.master = master
         self.frames = {}  # Dictionary to store persistent frames
@@ -47,5 +48,3 @@ class FrameManager:
 
             # Show the previous frame
             self.current_frame.pack(fill=tk.BOTH, expand=True)
-
-

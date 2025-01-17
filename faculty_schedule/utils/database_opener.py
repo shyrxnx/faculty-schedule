@@ -1,15 +1,16 @@
-import subprocess
-import platform
 import os
+import platform
+import subprocess
+
 
 def find_xampp_path():
     """Try to find the XAMPP path automatically or ask the user."""
     possible_paths = [
-        r"C:\xampp",                # Common path on Windows
-        r"D:\xampp",                # Alternate drive
-        "/opt/lampp",               # Common path on Linux/macOS
+        r"C:\xampp",  # Common path on Windows
+        r"D:\xampp",  # Alternate drive
+        "/opt/lampp",  # Common path on Linux/macOS
     ]
-    
+
     # Check if any of the common paths exist
     for path in possible_paths:
         if os.path.exists(path):
@@ -22,6 +23,7 @@ def find_xampp_path():
         return user_path
     else:
         raise FileNotFoundError("The specified XAMPP path does not exist.")
+
 
 def start_apache_mysql():
     """Start Apache and MySQL specifically."""
@@ -48,6 +50,7 @@ def start_apache_mysql():
     except Exception as e:
         print(f"Error starting services: {e}")
 
+
 def stop_apache_mysql():
     """Stop Apache and MySQL specifically (forcefully)."""
     system = platform.system()
@@ -57,14 +60,13 @@ def stop_apache_mysql():
             subprocess.Popen(["taskkill", "/F", "/IM", "httpd.exe"], shell=True)  # Apache (httpd)
             subprocess.Popen(["taskkill", "/F", "/IM", "mysqld.exe"], shell=True)  # MySQL (mysqld)
             print("Apache and MySQL servers stopped.")
-        
+
         elif system in ["Linux", "Darwin"]:
             # Linux/macOS: Forcefully stop Apache and MySQL using pkill
             subprocess.Popen(["sudo", "pkill", "apache2"], shell=True)  # Apache on Linux
-            subprocess.Popen(["sudo", "pkill", "mysql"], shell=True)   # MySQL on Linux
+            subprocess.Popen(["sudo", "pkill", "mysql"], shell=True)  # MySQL on Linux
             print("Apache and MySQL servers stopped.")
         else:
             print("Unsupported operating system.")
     except Exception as e:
         print(f"Error stopping services: {e}")
-

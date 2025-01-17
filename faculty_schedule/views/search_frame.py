@@ -1,14 +1,16 @@
 # faculty_schedule/views/search_frame.py
 
-from ..utils.frames import BaseFrame
 from .sched_codes_frame import SchedCodesFrame
+from ..utils.frames import BaseFrame
+
 
 class SearchFrame(BaseFrame):
     """Frame for searching and viewing employee data."""
+
     def __init__(self, master, frame_manager):
         super().__init__(master, frame_manager)
         self.frame_manager = frame_manager
-        
+
         # Set up columns
         self.set_columns(["Name", "Employee Id"])
 

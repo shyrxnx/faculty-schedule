@@ -2,13 +2,15 @@
 
 from ..utils.frames import BaseFrame
 
+
 class SchedCodesFrame(BaseFrame):
     """Frame for displaying and managing schedule codes."""
+
     def __init__(self, master=None, frame_manager=None, selected_item=None):
         super().__init__(master, frame_manager)
-        
+
         print(f"Selected Item Passed: {selected_item}")
-        
+
         if selected_item:
             print(f"Selected Item Passed: {selected_item[1]}")
 

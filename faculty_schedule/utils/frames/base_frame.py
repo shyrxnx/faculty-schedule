@@ -3,8 +3,10 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class BaseFrame(tk.Frame):
     """Base class for all frames."""
+
     def __init__(self, master=None, frame_manager=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
@@ -74,7 +76,8 @@ class BaseFrame(tk.Frame):
         """To be overridden in subclasses for specific behavior."""
         if hasattr(self, 'selected_row'):
             print(f"Viewing: {self.selected_row}")
-            self.frame_manager.show_frame(SchedCodesFrame, frame_manager=self.frame_manager, selected_item=self.selected_row)
+            self.frame_manager.show_frame(SchedCodesFrame, frame_manager=self.frame_manager,
+                                          selected_item=self.selected_row)
         pass
 
     def edit_item(self):
