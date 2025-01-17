@@ -32,16 +32,16 @@ def start_apache_mysql():
             apache_cmd = os.path.join(xampp_path, "apache_start.bat")
             mysql_cmd = os.path.join(xampp_path, "mysql_start.bat")
 
-            subprocess.run([apache_cmd], check=True)
+            subprocess.Popen([apache_cmd], check=True)
             print("Apache server started.")
-            subprocess.run([mysql_cmd], check=True)
+            subprocess.Popen([mysql_cmd], check=True)
             print("MySQL server started.")
         elif system in ["Linux", "Darwin"]:
             # Assuming lampp is in /opt/lampp
             xampp_script = os.path.join(xampp_path, "lampp")
-            subprocess.run(["sudo", xampp_script, "startapache"], check=True)
+            subprocess.Popen(["sudo", xampp_script, "startapache"], check=True)
             print("Apache server started.")
-            subprocess.run(["sudo", xampp_script, "startmysql"], check=True)
+            subprocess.Popen(["sudo", xampp_script, "startmysql"], check=True)
             print("MySQL server started.")
         else:
             print("Unsupported operating system.")
