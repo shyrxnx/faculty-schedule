@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from faculty_schedule.utils.frames import FrameManager  # Import the FrameManager class
-from faculty_schedule.views.search_frame import SearchFrame
+from faculty_schedule.views import SearchFrame
 
 # Start Apache and MySQL
 # do.start_apache_mysql()  # Use this to start MySQL and Apache
