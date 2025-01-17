@@ -21,7 +21,7 @@ homepage = "https://github.com/shyrxnx/faculty-schedule"
 repository = "https://github.com/shyrxnx/faculty-schedule"
 
 [project.scripts]
-faculty_schedule = "faculty_schedule.__main__:main"
+scheduler = "faculty_schedule.__main__:main"
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
