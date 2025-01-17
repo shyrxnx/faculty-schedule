@@ -1,8 +1,10 @@
 # from .utils import database_opener as do
 import tkinter as tk
 from tkinter import messagebox
-from faculty_schedule.utils.frames import FrameManager  # Import the FrameManager class
-from faculty_schedule.views import SearchFrame
+
+from .utils.frames import FrameManager  # Import the FrameManager class
+from .views import SearchFrame
+
 
 # Start Apache and MySQL
 # do.start_apache_mysql()  # Use this to start MySQL and Apache
@@ -14,6 +16,7 @@ def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         # do.stop_apache_mysql()  # Use this to stop MySQL and Apache
         window.destroy()  # Close the window
+
 
 # Create the main window
 window = tk.Tk()
