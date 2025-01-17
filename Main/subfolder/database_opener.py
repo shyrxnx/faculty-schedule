@@ -32,20 +32,39 @@ def start_apache_mysql():
             apache_cmd = os.path.join(xampp_path, "apache_start.bat")
             mysql_cmd = os.path.join(xampp_path, "mysql_start.bat")
 
-            subprocess.Popen([apache_cmd], check=True)
+            subprocess.Popen([apache_cmd], creationflags=subprocess.CREATE_NEW_CONSOLE, shell=True)
             print("Apache server started.")
-            subprocess.Popen([mysql_cmd], check=True)
+            subprocess.Popen([mysql_cmd], creationflags=subprocess.CREATE_NEW_CONSOLE, shell=True)
             print("MySQL server started.")
         elif system in ["Linux", "Darwin"]:
             # Assuming lampp is in /opt/lampp
             xampp_script = os.path.join(xampp_path, "lampp")
-            subprocess.Popen(["sudo", xampp_script, "startapache"], check=True)
+            subprocess.run(["sudo", xampp_script, "startapache"], shell=True, check=True)
             print("Apache server started.")
-            subprocess.Popen(["sudo", xampp_script, "startmysql"], check=True)
+            subprocess.run(["sudo", xampp_script, "startmysql"], shell=True, check=True)
             print("MySQL server started.")
         else:
             print("Unsupported operating system.")
     except Exception as e:
         print(f"Error starting services: {e}")
 
-start_apache_mysql()
+def stop_apache_mysql():
+    """Stop Apache and MySQL specifically (forcefully)."""
+    system = platform.system()
+    try:
+        if system == "Windows":
+            # Kill Apache and MySQL processes by task name
+            subprocess.Popen(["taskkill", "/F", "/IM", "httpd.exe"], shell=True)  # Apache (httpd)
+            subprocess.Popen(["taskkill", "/F", "/IM", "mysqld.exe"], shell=True)  # MySQL (mysqld)
+            print("Apache and MySQL servers stopped.")
+        
+        elif system in ["Linux", "Darwin"]:
+            # Linux/macOS: Forcefully stop Apache and MySQL using pkill
+            subprocess.Popen(["sudo", "pkill", "apache2"], shell=True)  # Apache on Linux
+            subprocess.Popen(["sudo", "pkill", "mysql"], shell=True)   # MySQL on Linux
+            print("Apache and MySQL servers stopped.")
+        else:
+            print("Unsupported operating system.")
+    except Exception as e:
+        print(f"Error stopping services: {e}")
+
