@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "faculty_schedule"
+version = "0.1.0"
+description = "Faculty Scheduler"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE.txt" }
+authors = [{ name = "shyrxnx" }, { name = "dev-laww" }, { name = "dominique-bautista" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+homepage = "https://github.com/shyrxnx/faculty-schedule"
+repository = "https://github.com/shyrxnx/faculty-schedule"
+
+[project.scripts]
+faculty_schedule = "faculty_schedule.__main__:main"
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }
