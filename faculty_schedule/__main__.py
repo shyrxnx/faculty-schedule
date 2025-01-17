@@ -1,18 +1,16 @@
-from database_opener import database_opener as do
-import tkinter as tk
+# from .utils import database_opener as do
 from tkinter import messagebox
-from views.frames import *
-from views.frame_manager import FrameManager  # Import the FrameManager class
+from faculty_schedule.utils.frames.frame_manager import FrameManager  # Import the FrameManager class
 
 # Start Apache and MySQL
-do.start_apache_mysql()  # Use this to start MySQL and Apache
+# do.start_apache_mysql()  # Use this to start MySQL and Apache
 # do.stop_apache_mysql()  # Use this to stop MySQL and Apache
 
 # Function to handle the window close event
 def on_closing():
     # Ask the user for confirmation before closing
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        do.stop_apache_mysql()  # Use this to stop MySQL and Apache
+        # do.stop_apache_mysql()  # Use this to stop MySQL and Apache
         window.destroy()  # Close the window
 
 # Create the main window
