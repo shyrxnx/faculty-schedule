@@ -15,7 +15,7 @@ from .views import SearchFrame
 # Function to handle the window close event
 def on_closing():
     # Ask the user for confirmation before closing
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+    if messagebox.askokcancel('Quit', 'Do you want to quit?'):
         # do.stop_apache_mysql()  # Use this to stop MySQL and Apache
         window.destroy()  # Close the window
 
@@ -24,10 +24,10 @@ def on_closing():
 window = tk.Tk()
 
 # Set the window title
-window.title("Faculty Scheduler")
+window.title('Faculty Scheduler')
 
 # Set the window size
-window.geometry(f"{int(window.winfo_screenwidth() * 0.8)}x{int(window.winfo_screenheight() * 0.8)}")
+window.geometry(f'{int(window.winfo_screenwidth() * 0.8)}x{int(window.winfo_screenheight() * 0.8)}')
 
 # Create the FrameManager instance
 frame_manager = FrameManager(window)
@@ -36,7 +36,7 @@ frame_manager = FrameManager(window)
 frame_manager.show_frame(SearchFrame)
 
 # Bind the close event to the on_closing function
-window.protocol("WM_DELETE_WINDOW", on_closing)
+window.protocol('WM_DELETE_WINDOW', on_closing)
 
 
 def main():
@@ -44,5 +44,5 @@ def main():
     window.mainloop()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

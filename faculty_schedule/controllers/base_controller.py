@@ -7,7 +7,7 @@ from ..exceptions import ValidationError
 
 class BaseExcelController:
     def __init__(self):
-        self.data_dir = Path("data")
+        self.data_dir = Path('data')
         self.data_dir.mkdir(exist_ok=True)
 
     def _save_df(self, df: pd.DataFrame, filename: str):
@@ -29,14 +29,14 @@ class BaseExcelController:
             existing = df[df[column] == value]
 
         if not existing.empty:
-            raise ValidationError(f"Value '{value}' already exists in {column}")
+            raise ValidationError(f'Value \'{value}\' already exists in {column}')
 
     def _validate_foreign_key(self, related_df: pd.DataFrame, foreign_key: int, key_name: str):
         """Validate that a foreign key exists in the related table"""
         if foreign_key not in related_df['id'].values:
-            raise ValidationError(f"Invalid {key_name}: {foreign_key} does not exist")
+            raise ValidationError(f'Invalid {key_name}: {foreign_key} does not exist')
 
     def _validate_required(self, value: any, field_name: str):
         """Validate that a required field is not empty"""
-        if pd.isna(value) or value == "":
-            raise ValidationError(f"{field_name} is required")
+        if pd.isna(value) or value == '':
+            raise ValidationError(f'{field_name} is required')
