@@ -1,85 +1,70 @@
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
-from .base_controller import BaseExcelController
+from .base_controller import BaseController
 from ..exceptions import NotFoundError, ValidationError
 from ..models.employee import Employee
 
 
-class EmployeeController(BaseExcelController):
+class EmployeeController(BaseController):
     def __init__(self):
         super().__init__()
         self.filename = 'employees.xlsx'
 
-    def _validate_employee_data(self, name: str, employee_id: int = None):
-        """Validate employee data before creation/update"""
+    def create_employee(self, data: dict) -> Employee:
         df = self._load_df(self.filename)
+        employee = Employee.model_validate(data)
 
-        # Validate required fields
-        self._validate_required(name, 'Employee name')
+        try:
+            self.get_employee(employee.id)
+            raise ValidationError(f'Employee with id {employee.id} already exists')
+        except NotFoundError:
+            pass
 
-        # Validate name length
-        if len(name) < 2 or len(name) > 100:
-            raise ValidationError('Employee name must be between 2 and 100 characters')
+        df = pd.concat([df, pd.DataFrame([employee.model_dump(exclude={'schedules'})])], ignore_index=True)
 
-        # Check for unique name (case-insensitive)
-        name_lower = name.lower()
-        if employee_id:
-            existing = df[(df['name'].str.lower() == name_lower) & (df['id'] != employee_id)]
-        else:
-            existing = df[df['name'].str.lower() == name_lower]
-
-        if not existing.empty:
-            raise ValidationError(f'An employee with the name \'{name}\' already exists')
-
-    def create_employee(self, name: str) -> Employee:
-        self._validate_employee_data(name)
-
-        df = self._load_df(self.filename)
-        new_id = 1 if df.empty else df['id'].max() + 1
-
-        new_employee = {
-            'id': new_id,
-            'name': name.strip()
-        }
-
-        df = pd.concat([df, pd.DataFrame([new_employee])], ignore_index=True)
         self._save_df(df, self.filename)
 
-        return Employee(id=new_id, name=name, schedules=[])
+        return employee
 
-    def get_employee(self, employee_id: int) -> Employee:
+    def get_employee(self, employee_id: int, include_schedules: bool = False) -> Employee:
         df = self._load_df(self.filename)
-        employee_data = df[df['id'] == employee_id]
+        if df.empty:
+            employee_data = pd.DataFrame(columns=['id', 'name'])
+        else:
+            employee_data = df[df['id'] == employee_id] if not df.empty else pd.DataFrame(columns=['id', 'name'])
 
         if employee_data.empty:
             raise NotFoundError(f'Employee with id {employee_id} not found')
 
+        # TODO: Implement the logic to include schedules
         return Employee(
             id=employee_data.iloc[0]['id'],
             name=employee_data.iloc[0]['name'],
             schedules=[]
         )
 
-    def get_all_employees(self) -> List[Employee]:
+    def get_employees(self, search: Optional[str] = None) -> List[Employee]:
         df = self._load_df(self.filename)
         return [
-            Employee(id=row['id'], name=row['name'], schedules=[])
+            Employee(id=row['id'], name=row['name'])
             for _, row in df.iterrows()
+            if search is None or search.lower() in row['name'].lower()
         ]
 
-    def update_employee(self, employee_id: int, name: str) -> Employee:
+    def update_employee(self, employee_id: int, data: dict) -> Employee:
         df = self._load_df(self.filename)
+
         if employee_id not in df['id'].values:
             raise NotFoundError(f'Employee with id {employee_id} not found')
 
-        self._validate_employee_data(name, employee_id)
+        name = data.get('name')
 
         df.loc[df['id'] == employee_id, 'name'] = name.strip()
         self._save_df(df, self.filename)
 
-        return Employee(id=employee_id, name=name, schedules=[])
+        return Employee(id=employee_id, name=name)
 
     def delete_employee(self, employee_id: int) -> bool:
         df = self._load_df(self.filename)
