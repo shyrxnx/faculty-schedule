@@ -45,12 +45,12 @@ class EmployeeController(BaseController):
             schedules=[]
         )
 
-    def get_employees(self, search: Optional[str] = None) -> List[Employee]:
+    def get_employees(self, employee_id: Optional[int] = None, name: Optional[str] = None) -> List[Employee]:
         df = self._load_df(self.filename)
         return [
             Employee(id=row['id'], name=row['name'])
             for _, row in df.iterrows()
-            if search is None or search.lower() in row['name'].lower()
+            if name is None or name.lower() in row['name'].lower() or employee_id == row['id']
         ]
 
     def update_employee(self, employee_id: int, data: dict) -> Employee:
