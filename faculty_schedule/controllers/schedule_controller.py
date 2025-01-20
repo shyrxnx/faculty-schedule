@@ -4,8 +4,7 @@ import pandas as pd
 
 from .base_controller import BaseController
 from ..exceptions import NotFoundError, ValidationError
-from ..models.schedule import Schedule
-from ..models.schedule_slot import ScheduleSlot, Day
+from ..models import Schedule, ScheduleSlot, Day
 
 
 class ScheduleController(BaseController):
@@ -21,7 +20,6 @@ class ScheduleController(BaseController):
 
         # Validate required fields
         self._validate_required(code, 'Schedule code')
-        self._validate_required(description, 'Description')
 
         # Validate foreign key
         self._validate_foreign_key(employees_df, employee_id, 'employee_id')
@@ -39,12 +37,12 @@ class ScheduleController(BaseController):
                 (schedules_df['employee_id'] == employee_id) &
                 (schedules_df['code'].str.lower() == code_lower) &
                 (schedules_df['id'] != schedule_id)
-                ]
+                ] if not schedules_df.empty else pd.DataFrame()
         else:
             existing = schedules_df[
                 (schedules_df['employee_id'] == employee_id) &
                 (schedules_df['code'].str.lower() == code_lower)
-                ]
+                ] if not schedules_df.empty else pd.DataFrame()
 
         if not existing.empty:
             raise ValidationError(f'Schedule code \'{code}\' already exists for this employee')
@@ -80,7 +78,7 @@ class ScheduleController(BaseController):
         existing_slots = slots_df[
             (slots_df['schedule_id'].isin(employee_schedules)) &
             (slots_df['day'] == day.value)
-            ]
+            ] if not slots_df.empty else pd.DataFrame()
 
         for _, slot in existing_slots.iterrows():
             slot_start = datetime.strptime(slot['start_time'], '%H:%M').time()
@@ -89,31 +87,26 @@ class ScheduleController(BaseController):
             if start < slot_end and end > slot_start:
                 raise ValidationError(f'Time slot conflicts with existing schedule on {day.value}')
 
-    def create_schedule(self, employee_id: int, code: str, description: str) -> Schedule:
+    def create_schedule(self, data: dict) -> Schedule:
+        employee_id = data.get('employee_id')
+        code = data.get('code')
+        description = data.get('description')
+
         self._validate_schedule_data(employee_id, code, description)
 
         df = self._load_df(self.schedules_file)
-        new_id = 1 if df.empty else df['id'].max() + 1
-
-        new_schedule = {
-            'id': new_id,
+        schedule = Schedule.model_validate({
             'employee_id': employee_id,
             'code': code.strip(),
             'description': description.strip()
-        }
+        })
 
-        df = pd.concat([df, pd.DataFrame([new_schedule])], ignore_index=True)
+        df = pd.concat([df, pd.DataFrame([schedule.model_dump(exclude={'details', 'employee'})])], ignore_index=True)
         self._save_df(df, self.schedules_file)
 
-        return Schedule(
-            id=new_id,
-            employee_id=employee_id,
-            code=code,
-            description=description,
-            details=[]
-        )
+        return schedule
 
-    def get_schedule(self, schedule_id: int, include_slots: bool = False) -> Schedule:
+    def get_schedule(self, schedule_id: int) -> Schedule:
         schedules_df = self._load_df(self.schedules_file)
         slots_df = self._load_df(self.slots_file)
 
@@ -123,12 +116,17 @@ class ScheduleController(BaseController):
             raise NotFoundError(f'Schedule with id {schedule_id} not found')
 
         schedule_data = schedule_data.iloc[0]
-        slots = []
 
-        if include_slots:
-            slots_data = slots_df[slots_df['schedule_id'] == schedule_id]
-            for _, slot in slots_data.iterrows():
-                slots.append(ScheduleSlot.model_validate(slot))
+        slots_data = slots_df[slots_df['schedule_id'] == schedule_id] if not slots_df.empty else pd.DataFrame()
+        slots = [
+            ScheduleSlot(
+                schedule_id=slot['schedule_id'],
+                day=Day(slot['day']),
+                start_time=datetime.strptime(slot['start_time'], '%H:%M').time(),
+                end_time=datetime.strptime(slot['end_time'], '%H:%M').time()
+            )
+            for _, slot in slots_data.iterrows()
+        ]
 
         return Schedule(
             id=schedule_data['id'],
@@ -138,25 +136,29 @@ class ScheduleController(BaseController):
             details=slots
         )
 
-    def add_schedule_slot(self, schedule_id: int, day: Day, start_time: str, end_time: str) -> ScheduleSlot:
+    def add_schedule_slot(self, data: dict) -> ScheduleSlot:
+        schedule_id = data.get('schedule_id')
+        day = Day(data.get('day'))
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+
         self._validate_schedule_slot(schedule_id, day, start_time, end_time)
 
         df = self._load_df(self.slots_file)
-        new_id = 1 if df.empty else df['id'].max() + 1
 
-        new_slot = {
-            'id': new_id,
+        slot = ScheduleSlot.model_validate({
             'schedule_id': schedule_id,
-            'day': day.value,
+            'day': day,
             'start_time': start_time,
             'end_time': end_time
-        }
+        })
 
-        df = pd.concat([df, pd.DataFrame([new_slot])], ignore_index=True)
+        slot_data = pd.DataFrame([slot.model_dump(exclude={'schedule'})])
+
+        df = pd.concat([df, slot_data], ignore_index=True)
         self._save_df(df, self.slots_file)
 
         return ScheduleSlot(
-            id=new_id,
             schedule_id=schedule_id,
             day=day,
             start_time=datetime.strptime(start_time, '%H:%M').time(),
