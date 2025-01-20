@@ -95,6 +95,20 @@ class ScheduleController(BaseController):
                 raise ValidationError(f'Time slot conflicts with existing schedule on {day.value}')
 
     def create_schedule(self, data: dict) -> Schedule:
+        """Create a new schedule for an employee.
+
+        Args:
+            data (dict): Dictionary containing:
+                - employee_id: ID of the employee
+                - code: Unique schedule code
+                - description: Optional schedule description
+
+        Returns:
+            Schedule: The created schedule object
+
+        Raises:
+            ValidationError: If the schedule data is invalid
+        """
         employee_id = data.get('employee_id')
         code = data.get('code')
         description = data.get('description')
@@ -114,6 +128,17 @@ class ScheduleController(BaseController):
         return schedule
 
     def get_schedule(self, schedule_id: int) -> Schedule:
+        """Retrieve a schedule by its ID, including all schedule slots.
+
+        Args:
+            schedule_id (int): ID of the schedule to retrieve
+
+        Returns:
+            Schedule: The schedule object with its associated slots
+
+        Raises:
+            NotFoundError: If the schedule doesn't exist
+        """
         schedules_df = self._load_df(self.schedules_file)
         slots_df = self._load_df(self.slots_file)
 
@@ -145,6 +170,23 @@ class ScheduleController(BaseController):
         )
 
     def add_schedule_slot(self, data: dict) -> ScheduleSlot:
+        """Add a new time slot to an existing schedule.
+
+        Args:
+            data (dict): Dictionary containing:
+                - schedule_id: ID of the schedule
+                - day: Day enum value
+                - start_time: Start time in HH:MM format
+                - end_time: End time in HH:MM format
+                - detail: Description of the schedule slot
+
+        Returns:
+            ScheduleSlot: The created schedule slot object
+
+        Raises:
+            ValidationError: If the slot data is invalid or conflicts with existing slots
+            NotFoundError: If the schedule doesn't exist
+        """
         schedule_id = data.get('schedule_id')
         day = Day(data.get('day'))
         start_time = data.get('start_time')
@@ -171,6 +213,17 @@ class ScheduleController(BaseController):
         return slot
 
     def delete_schedule(self, schedule_id: int) -> bool:
+        """Delete a schedule and all its associated slots.
+
+        Args:
+            schedule_id (int): ID of the schedule to delete
+
+        Returns:
+            bool: True if the schedule was successfully deleted
+
+        Raises:
+            NotFoundError: If the schedule doesn't exist
+        """
         schedules_df = self._load_df(self.schedules_file)
         slots_df = self._load_df(self.slots_file)
 
