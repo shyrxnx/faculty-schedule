@@ -13,8 +13,7 @@ class HomeFrame(BaseFrame):
 
         # Buttons
         button_texts = [
-            "Import from Excel File",
-            "Export Data",
+            "View Employee",
             "Add Employee",
             "Edit Employee",
             "Delete Employee",
@@ -43,10 +42,8 @@ class HomeFrame(BaseFrame):
         self.dropdown_click("Sort by Name")
 
     def on_button_click(self, button_text):
-        if button_text == "Import from Excel File":
-            self.import_from_excel()
-        elif button_text == "Export Data":
-            self.export_data()
+        if button_text == "View Employee":
+            self.view_employee()
         elif button_text == "Add Employee":
             self.show_add_employee_screen()
         elif button_text == "Edit Employee":
@@ -66,11 +63,8 @@ class HomeFrame(BaseFrame):
         # Update the tree with sorted data
         self.populate_tree(sorted_data)
 
-    def import_from_excel(self):
-        print("Importing from Excel File...")  # Placeholder for actual functionality
-
-    def export_data(self):
-        print("Exporting Data...")  # Placeholder for actual functionality
+    def view_employee(self):
+        print("Viewing Employee...")  # Placeholder for actual functionality
 
     def show_add_employee_screen(self):
         input_box = ctk.CTkToplevel(self)
