@@ -13,7 +13,7 @@ class ScheduleController(BaseController):
         self.schedules_file = 'schedules.xlsx'
         self.slots_file = 'schedule_slots.xlsx'
 
-    def _validate_schedule_data(self, employee_id: int, code: str, description: str, schedule_id: int = None):
+    def _validate_schedule_data(self, employee_id: int, code: str, schedule_id: int = None):
         """Validate schedule data before creation/update"""
         schedules_df = self._load_df(self.schedules_file)
         employees_df = self._load_df('employees.xlsx')
@@ -47,14 +47,21 @@ class ScheduleController(BaseController):
         if not existing.empty:
             raise ValidationError(f'Schedule code \'{code}\' already exists for this employee')
 
-    def _validate_schedule_slot(self, schedule_id: int, day: Day, start_time: str, end_time: str):
+    def _validate_schedule_slot(self, schedule_id: int, day: Day, start_time: str, end_time: str, detail: str):
         """Validate schedule slot data"""
         slots_df = self._load_df(self.slots_file)
         schedules_df = self._load_df(self.schedules_file)
 
         # Validate schedule exists
-        if schedule_id not in schedules_df['id'].values:
-            raise NotFoundError(f'Schedule with id {schedule_id} not found')
+        self._validate_foreign_key(schedules_df, schedule_id, 'schedule_id')
+
+        # Validate required fields
+        self._validate_required(start_time, 'Start time')
+        self._validate_required(end_time, 'End time')
+        self._validate_required(detail, 'Detail')
+        self._validate_required(day, 'Day')
+        self._validate_required(schedule_id, 'Schedule ID')
+        self._validate_required(detail, 'Detail')
 
         # Convert times to datetime.time objects
         try:
@@ -92,7 +99,7 @@ class ScheduleController(BaseController):
         code = data.get('code')
         description = data.get('description')
 
-        self._validate_schedule_data(employee_id, code, description)
+        self._validate_schedule_data(employee_id, code)
 
         df = self._load_df(self.schedules_file)
         schedule = Schedule.model_validate({
@@ -123,7 +130,8 @@ class ScheduleController(BaseController):
                 schedule_id=slot['schedule_id'],
                 day=Day(slot['day']),
                 start_time=datetime.strptime(slot['start_time'], '%H:%M').time(),
-                end_time=datetime.strptime(slot['end_time'], '%H:%M').time()
+                end_time=datetime.strptime(slot['end_time'], '%H:%M').time(),
+                detail=slot['detail']
             )
             for _, slot in slots_data.iterrows()
         ]
@@ -141,14 +149,16 @@ class ScheduleController(BaseController):
         day = Day(data.get('day'))
         start_time = data.get('start_time')
         end_time = data.get('end_time')
+        detail = data.get('detail')
 
-        self._validate_schedule_slot(schedule_id, day, start_time, end_time)
+        self._validate_schedule_slot(schedule_id, day, start_time, end_time, detail)
 
         df = self._load_df(self.slots_file)
 
         slot = ScheduleSlot.model_validate({
             'schedule_id': schedule_id,
             'day': day,
+            'detail': detail,
             'start_time': start_time,
             'end_time': end_time
         })
@@ -158,12 +168,7 @@ class ScheduleController(BaseController):
         df = pd.concat([df, slot_data], ignore_index=True)
         self._save_df(df, self.slots_file)
 
-        return ScheduleSlot(
-            schedule_id=schedule_id,
-            day=day,
-            start_time=datetime.strptime(start_time, '%H:%M').time(),
-            end_time=datetime.strptime(end_time, '%H:%M').time()
-        )
+        return slot
 
     def delete_schedule(self, schedule_id: int) -> bool:
         schedules_df = self._load_df(self.schedules_file)

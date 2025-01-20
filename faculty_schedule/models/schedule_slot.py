@@ -30,6 +30,7 @@ class ScheduleSlot(BaseModel):
     schedule_id: int
     start_time: time
     end_time: time
+    detail: str
     schedule: Optional['Schedule'] = Field(default=None)
 
     @classmethod
