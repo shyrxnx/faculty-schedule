@@ -5,7 +5,7 @@ import pandas as pd
 from ..exceptions import ValidationError
 
 
-class BaseExcelController:
+class BaseController:
     def __init__(self):
         self.data_dir = Path('data')
         self.data_dir.mkdir(exist_ok=True)
