@@ -2,13 +2,13 @@ from datetime import datetime
 
 import pandas as pd
 
-from .base_controller import BaseExcelController
+from .base_controller import BaseController
 from ..exceptions import NotFoundError, ValidationError
 from ..models.schedule import Schedule
 from ..models.schedule_slot import ScheduleSlot, Day
 
 
-class ScheduleController(BaseExcelController):
+class ScheduleController(BaseController):
     def __init__(self):
         super().__init__()
         self.schedules_file = 'schedules.xlsx'
@@ -111,6 +111,31 @@ class ScheduleController(BaseExcelController):
             code=code,
             description=description,
             details=[]
+        )
+
+    def get_schedule(self, schedule_id: int, include_slots: bool = False) -> Schedule:
+        schedules_df = self._load_df(self.schedules_file)
+        slots_df = self._load_df(self.slots_file)
+
+        schedule_data = schedules_df[schedules_df['id'] == schedule_id]
+
+        if schedule_data.empty:
+            raise NotFoundError(f'Schedule with id {schedule_id} not found')
+
+        schedule_data = schedule_data.iloc[0]
+        slots = []
+
+        if include_slots:
+            slots_data = slots_df[slots_df['schedule_id'] == schedule_id]
+            for _, slot in slots_data.iterrows():
+                slots.append(ScheduleSlot.model_validate(slot))
+
+        return Schedule(
+            id=schedule_data['id'],
+            employee_id=schedule_data['employee_id'],
+            code=schedule_data['code'],
+            description=schedule_data['description'],
+            details=slots
         )
 
     def add_schedule_slot(self, schedule_id: int, day: Day, start_time: str, end_time: str) -> ScheduleSlot:

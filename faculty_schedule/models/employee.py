@@ -1,11 +1,12 @@
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel, Field
 
 from .schedule import Schedule
+from ..utils.generators import generate_id
 
 
 class Employee(BaseModel):
-    id: int
+    id: int = Field(default_factory=generate_id)
     name: str
-    schedules: Optional[List[Schedule]] = Field(default=list)
+    schedules: List[Schedule] = Field(default_factory=list)
