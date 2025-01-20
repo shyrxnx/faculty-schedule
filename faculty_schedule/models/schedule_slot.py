@@ -2,7 +2,9 @@ from datetime import time
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from ..utils.generators import generate_id
 
 
 class Day(str, Enum):
@@ -16,9 +18,9 @@ class Day(str, Enum):
 
 
 class ScheduleSlot(BaseModel):
-    id: int
+    id: int = Field(default_factory=generate_id)
     day: Day
     schedule_id: int
     start_time: time
     end_time: time
-    schedule: Optional['Schedule'] = None
+    schedule: Optional['Schedule'] = Field(default=None)
