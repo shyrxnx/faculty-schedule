@@ -1,97 +1,92 @@
-# faculty_schedule/utils/frames/base_frame.py
-
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import ttk
 
 
-class BaseFrame(tk.Frame):
-    """Base class for all frames."""
-
+class BaseFrame(ctk.CTkFrame):
     def __init__(self, master=None, frame_manager=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.selected_row = None
-        self.master = master
         self.frame_manager = frame_manager
-        self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # Search bar frame (common across all frames)
-        self.search_frame = tk.Frame(self)
-        self.search_frame.pack(side=tk.TOP, anchor='ne', padx=10, pady=10, fill=tk.X)
+        # Title
+        self.create_title_label("Faculty Scheduler")
 
-        # Search components (search bar, button)
-        self.search_button = tk.Button(self.search_frame, text='Search', command=self.search)
-        self.search_button.pack(side=tk.RIGHT)
-        self.search_bar = tk.Entry(self.search_frame)
-        self.search_bar.pack(side=tk.RIGHT, padx=5)
-        self.search_label = tk.Label(self.search_frame, text='Search:')
-        self.search_label.pack(side=tk.RIGHT)
+    def create_title_label(self, text, font=("Arial", 24, "bold"), row=0, column=0, columnspan=1, padx=10, pady=10):
+        title_label = ctk.CTkLabel(self, text=text, font=font)
+        title_label.grid(row=row, column=column, columnspan=columnspan, sticky="nsew", padx=padx, pady=pady)
+        return title_label
 
-        # Treeview (for displaying data)
-        self.tree = ttk.Treeview(self, show='headings')
-        self.tree.pack(fill=tk.BOTH, expand=True, pady=10)
+    def create_buttons(self, button_texts, row_start=1, column_start=0):
+        buttons = []
+        for i, text in enumerate(button_texts):
+            button = ctk.CTkButton(self, text=text, font=("Arial", 14, "bold"), width=180, height=34, command=lambda t=text: self.on_button_click(t))
+            button.grid(row=row_start + i, column=column_start, sticky="nsew", padx=10, pady=5)
+            buttons.append(button)
+        return buttons
 
-        # Button frame (common buttons: Back, View, Edit, Delete)
-        self.button_frame = tk.Frame(self)
-        self.button_frame.pack(side=tk.BOTTOM, anchor='ne', padx=10, pady=10)
-        self.back_button = tk.Button(self.button_frame, text='Back', command=self.go_back)
-        self.back_button.grid(row=0, column=0, padx=5)
-        self.view_button = tk.Button(self.button_frame, text='View', state=tk.DISABLED, command=self.view_item)
-        self.view_button.grid(row=0, column=1, padx=5)
-        self.edit_button = tk.Button(self.button_frame, text='Edit', state=tk.DISABLED, command=self.edit_item)
-        self.edit_button.grid(row=0, column=2, padx=5)
-        self.delete_button = tk.Button(self.button_frame, text='Delete', state=tk.DISABLED, command=self.delete_item)
-        self.delete_button.grid(row=0, column=4, padx=5)
+    def on_button_click(self, button_name):
+        print(button_name)
 
-        # Bind selection event
-        self.tree.bind('<ButtonRelease-1>', self.on_row_select)
+    def create_dropdown(self, values, default_value, row, column, width=180, padx=10, pady=30):
+        dropdown = ctk.CTkOptionMenu(self, values=values, width=width, command=self.dropdown_click)
+        dropdown.set(default_value)
+        dropdown.grid(row=row, column=column, sticky="w", padx=padx, pady=pady)
+        return dropdown
 
-    def search(self):
-        """Filter the treeview based on search input."""
-        query = self.search_bar.get().lower()
-        for item in self.tree.get_children():
-            row_values = self.tree.item(item)['values']
-            if query in str(row_values[0]).lower() or query in str(row_values[1]).lower():
-                self.tree.item(item, tags='match')
-            else:
-                self.tree.item(item, tags='no_match')
-        for item in self.tree.get_children():
-            if 'match' in self.tree.item(item, 'tags'):
-                self.tree.item(item, open=True)
-            else:
-                self.tree.item(item, open=False)
+    def dropdown_click(self, selected_value):
+        print(f"Dropdown selected: {selected_value}")
+        # Add any additional handling logic here
 
-    def on_row_select(self, event):
-        """Called when a row is clicked, enables buttons."""
-        selected_item = self.tree.selection()
-        if selected_item:
-            self.selected_row = self.tree.item(selected_item)['values']
-            self.view_button.config(state=tk.NORMAL)
-            self.edit_button.config(state=tk.NORMAL)
-            self.delete_button.config(state=tk.NORMAL)
+    def create_search_bar(self, placeholder_text="Search...", font=("Arial", 12), row=0, column=1, padx=(20, 10),
+                          pady=10):
+        search_entry = ctk.CTkEntry(self, font=font, placeholder_text=placeholder_text)
+        search_entry.grid(row=row, column=column, sticky="nsew", padx=padx, pady=pady)
+        return search_entry
 
-    def go_back(self):
-        """Navigate to the previous frame."""
-        self.frame_manager.go_back()
+    def create_table(self, columns, row_start=1, column_start=1, height=10, width=150):
+        table = ttk.Treeview(self, columns=columns, show="headings", height=height)
+        table.grid(row=row_start, column=column_start, rowspan=7, sticky="nsew", padx=(0, 10), pady=5)
 
-    def view_item(self):
-        """To be overridden in subclasses for specific behavior."""
-        pass
+        style = ttk.Style()
 
-    def edit_item(self):
-        """To be overridden in subclasses for specific behavior."""
-        pass
+        style.theme_use("default")
 
-    def delete_item(self):
-        """To be overridden in subclasses for specific behavior."""
-        pass
+        style.configure("Treeview",
+                        background="#2a2d2e",
+                        foreground="white",
+                        rowheight=25,
+                        fieldbackground="#343638",
+                        bordercolor="#343638",
+                        borderwidth=0,
+                        font=("Arial", 12))
+        style.map('Treeview', background=[('selected', '#22559b')])
 
-    def set_columns(self, columns):
-        """Set the columns for the treeview dynamically."""
-        self.tree["columns"] = columns
+        style.configure("Treeview.Heading",
+                        background="#565b5e",
+                        foreground="white",
+                        relief="flat",
+                        font=("Arial", 12, "bold"))
+        style.map("Treeview.Heading",
+                  background=[('active', '#3484F0')])
+
         for col in columns:
-            self.tree.heading(col, text=col)
+            table.heading(col, text=col)
+            table.column(col, anchor="center", width=width)
+        return table
 
-    def populate_tree(self, data):
-        """Populate the treeview with data."""
-        for item in data:
-            self.tree.insert('', tk.END, values=item)
+    def set_layout(self, button_texts):
+        # Configure layout for the frame
+        # self.grid_rowconfigure(0, weight=0)  # Title row
+        # for i in range(1, len(button_texts)):  # Button and dropdown rows
+        #     self.grid_rowconfigure(i, weight=0)
+        self.grid_rowconfigure(7, weight=1)
+        self.grid_columnconfigure(0, weight=0)  # Left column (buttons)
+        self.grid_columnconfigure(1, weight=1)  # Right column (table and search bar)
+
+    def populate_tree(self, alist):
+        # Clear existing data from the Treeview
+        for item in self.table.get_children():
+            self.table.delete(item)
+
+        # Insert new data (sorted)
+        for item in alist:
+            self.table.insert("", "end", values=item)
