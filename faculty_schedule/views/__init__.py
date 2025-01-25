@@ -1,4 +1,4 @@
-from .home import HomeFrame, AddEmployeeFrame
-from .sched_codes_frame import SchedCodesFrame
+from .home import HomeFrame, AddEmployeeFrame, EditEmployeeFrame, DeleteEmployeeFrame
+from .sched_code import SchedCodeFrame
 
-__all__ = ["SchedCodesFrame", "HomeFrame", "AddEmployeeFrame"]
+__all__ = ["HomeFrame", "AddEmployeeFrame", "EditEmployeeFrame", "DeleteEmployeeFrame", "SchedCodeFrame"]
