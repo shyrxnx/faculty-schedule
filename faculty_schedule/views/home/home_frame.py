@@ -1,6 +1,6 @@
 import customtkinter as ctk
-
-from ..utils.frames import BaseFrame
+from faculty_schedule.utils.frames import BaseFrame
+from .add_employee_frame import AddEmployeeFrame
 
 
 class HomeFrame(BaseFrame):
@@ -49,48 +49,7 @@ class HomeFrame(BaseFrame):
         print("Viewing Employee...")  # Placeholder for actual functionality
 
     def show_add_employee_screen(self):
-        input_box = ctk.CTkToplevel(self)
-        input_box.title("Input Box")
-
-        # Center the pop-up on the screen
-        window_width = 275
-        window_height = 150
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-
-        x_position = int((screen_width - window_width) / 2)
-        y_position = int((screen_height - window_height) / 2)
-
-        input_box.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
-
-        # Ensure the pop-up is on top
-        input_box.lift()          # Bring to front
-        input_box.focus_force()   # Focus on the pop-up
-        input_box.grab_set()      # Prevent interaction with the main window
-
-        # Create a frame for name and input
-        name_frame = ctk.CTkFrame(input_box, width=15)
-        name_frame.pack(pady=10, anchor="w", padx=10)
-
-        # Label for name
-        ctk.CTkLabel(name_frame, text="Enter name:", width=100).pack(side="left", padx=0)
-        # Entry field for name
-        input_name = ctk.CTkEntry(name_frame)
-        input_name.pack(side="left", padx=10)
-
-        # Create a frame for id and input
-        emp_id_frame = ctk.CTkFrame(input_box, width=15)
-        emp_id_frame.pack(pady=10, anchor="w", padx=10)
-
-        # Label for id
-        ctk.CTkLabel(emp_id_frame, text="Enter id:", width=100).pack(side="left", padx=0)
-        # Entry field for id
-        input_id = ctk.CTkEntry(emp_id_frame)
-        input_id.pack(side="left", padx=10)
-
-        # Submit button centered at the bottom
-        submit_button = ctk.CTkButton(input_box, text="Submit")
-        submit_button.pack(pady=10, anchor="center")
+        AddEmployeeFrame(self)
 
     def show_edit_employee_screen(self):
         print("Showing Edit Employee Screen...")  # Placeholder for actual functionality
