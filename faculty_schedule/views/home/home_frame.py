@@ -1,6 +1,6 @@
-import customtkinter as ctk
 from faculty_schedule.utils.frames import BaseFrame
 from .add_employee_frame import AddEmployeeFrame
+from .edit_employee_frame import EditEmployeeFrame
 
 
 class HomeFrame(BaseFrame):
@@ -41,7 +41,7 @@ class HomeFrame(BaseFrame):
         elif button_text == "Add Employee":
             self.show_add_employee_screen()
         elif button_text == "Edit Employee":
-            pass
+            self.show_edit_employee_screen()
         elif button_text == "Delete Employee":
             pass
 
@@ -52,7 +52,7 @@ class HomeFrame(BaseFrame):
         AddEmployeeFrame(self)
 
     def show_edit_employee_screen(self):
-        print("Showing Edit Employee Screen...")  # Placeholder for actual functionality
+        EditEmployeeFrame(self)
 
     def show_delete_employee_screen(self):
         print("Showing Delete Employee Screen...")  # Placeholder for actual functionality
