@@ -1,7 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
 
-
 class BaseFrame(ctk.CTkFrame):
     def __init__(self, master=None, frame_manager=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -42,8 +41,7 @@ class BaseFrame(ctk.CTkFrame):
         print(f"Dropdown selected: {selected_value}")
         # Add any additional handling logic here
 
-    def create_search_bar(self, placeholder_text="Search...", font=("Arial", 12), row=0, column=1, padx=(20, 10),
-                          pady=10):
+    def create_search_bar(self, placeholder_text="Search...", font=("Arial", 12), row=0, column=1, padx=(20, 10), pady=10):
         search_entry = ctk.CTkEntry(self, font=font, placeholder_text=placeholder_text)
         search_entry.grid(row=row, column=column, sticky="nsew", padx=padx, pady=pady)
         return search_entry
@@ -79,11 +77,12 @@ class BaseFrame(ctk.CTkFrame):
             table.column(col, anchor="center", width=width)
         return table
 
-    def set_layout(self, button_texts):
-        # Configure layout for the frame
-        # self.grid_rowconfigure(0, weight=0)  # Title row
-        # for i in range(1, len(button_texts)):  # Button and dropdown rows
-        #     self.grid_rowconfigure(i, weight=0)
+    def set_layout(self, button_text):
         self.grid_rowconfigure(7, weight=1)
         self.grid_columnconfigure(0, weight=0)  # Left column (buttons)
-        self.grid_columnconfigure(1, weight=1)  # Right column (table and search bar)
+        self.grid_columnconfigure(1, weight=1)  # Right column (table, search bar, label)
+
+    def create_info_label(self, text, row=0, column=1, padx=(20, 10), pady=10):
+        label = ctk.CTkLabel(self, text=text, font=("Arial", 14, "bold"), text_color="white")
+        label.grid(row=row, column=column, sticky="w", padx=padx, pady=pady)
+        return label
