@@ -32,39 +32,18 @@ class HomeFrame(BaseFrame):
 
         self.set_layout(button_texts)
 
-        # # Data handling logic - This should probably be in the Controller or Model
-        # self.data = [
-        #     ("John Doe", 1),
-        #     ("Jane Smith", 2),
-        #     ("Alice Johnson", 3),
-        #     ("Bob Brown", 4),
-        # ]
-
         self.dropdown_click("Sort by Name")
 
-    # # Button click logic - This should probably be in the Controller
-    # def on_button_click(self, button_text):
-    #     if button_text == "View Employee":
-    #         self.view_employee()
-    #     elif button_text == "Add Employee":
-    #         self.show_add_employee_screen()
-    #     elif button_text == "Edit Employee":
-    #         pass
-    #     elif button_text == "Delete Employee":
-    #         pass
-
-    # # Data sorting logic - This should probably be in the Controller or Model
-    # def dropdown_click(self, selected_value):
-    #     # Sort data based on the selected value
-    #     if selected_value == "Sort by Name":
-    #         # Sort by name (alphabetically)
-    #         sorted_data = sorted(self.data, key=lambda x: x[0])  # Sort by the first element (name)
-    #     elif selected_value == "Sort by ID":
-    #         # Sort by ID (numerically)
-    #         sorted_data = sorted(self.data, key=lambda x: x[1])  # Sort by the second element (ID)
-    #
-    #     # Update the tree with sorted data
-    #     self.populate_tree(sorted_data)
+    # Button click logic - This should probably be in the Controller
+    def on_button_click(self, button_text):
+        if button_text == "View Employee":
+            self.view_employee()
+        elif button_text == "Add Employee":
+            self.show_add_employee_screen()
+        elif button_text == "Edit Employee":
+            pass
+        elif button_text == "Delete Employee":
+            pass
 
     def view_employee(self):
         print("Viewing Employee...")  # Placeholder for actual functionality
@@ -108,16 +87,6 @@ class HomeFrame(BaseFrame):
         # Entry field for id
         input_id = ctk.CTkEntry(emp_id_frame)
         input_id.pack(side="left", padx=10)
-
-        # # Function to handle the input when the button is clicked
-        # def handle_input():
-        #     user_name = input_name.get()
-        #     user_id = input_id.get()
-        #     # Data handling logic - This should probably be in the Controller or Model
-        #     self.data.append((user_name, int(user_id)))
-        #     self.dropdown_click("Sort by Name")
-        #     print(f"User entered: {user_name} id: {user_id}")
-        #     input_box.destroy()  # Close the pop-up
 
         # Submit button centered at the bottom
         submit_button = ctk.CTkButton(input_box, text="Submit")
