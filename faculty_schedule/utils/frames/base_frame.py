@@ -7,9 +7,6 @@ class BaseFrame(ctk.CTkFrame):
         super().__init__(master, *args, **kwargs)
         self.frame_manager = frame_manager
 
-        # Title
-        self.create_title_label("Faculty Scheduler")
-
     def create_title_label(self, text, font=("Arial", 24, "bold"), row=0, column=0, columnspan=1, padx=10, pady=10):
         title_label = ctk.CTkLabel(self, text=text, font=font)
         title_label.grid(row=row, column=column, columnspan=columnspan, sticky="nsew", padx=padx, pady=pady)
