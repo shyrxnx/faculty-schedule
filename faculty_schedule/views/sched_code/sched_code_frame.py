@@ -1,4 +1,7 @@
 from faculty_schedule.utils.frames import BaseFrame
+from .add_sched_code_frame import AddSchedCodeFrame
+from .edit_sched_code_frame import EditSchedCodeFrame
+from .delete_sched_code_frame import DeleteSchedCodeFrame
 
 
 class SchedCodeFrame(BaseFrame):
@@ -43,13 +46,13 @@ class SchedCodeFrame(BaseFrame):
             self.show_delete_schedule_code_screen()
 
     def show_add_schedule_code_screen(self):
-        print("Add Schedule Code...")  # Placeholder for screen navigation
+        AddSchedCodeFrame(self)
 
     def show_edit_schedule_code_screen(self):
-        print("Edit Schedule Code...")  # Placeholder for screen navigation
+        EditSchedCodeFrame(self)
 
     def show_delete_schedule_code_screen(self):
-        print("Delete Schedule Code...")  # Placeholder for screen navigation
+        DeleteSchedCodeFrame(self)
 
     # UI update method
     def update_info(self, name, emp_id):
