@@ -2,6 +2,7 @@ from faculty_schedule.utils.frames import BaseFrame
 from .add_employee_frame import AddEmployeeFrame
 from .edit_employee_frame import EditEmployeeFrame
 from .delete_employee_frame import DeleteEmployeeFrame
+from ..sched_code import SchedCodeFrame
 
 
 class HomeFrame(BaseFrame):
@@ -47,7 +48,9 @@ class HomeFrame(BaseFrame):
             self.show_delete_employee_screen()
 
     def view_employee(self):
-        print("Viewing Employee...")  # Placeholder for actual functionality
+        if self.frame_manager:
+            # Use the frame manager to navigate to SchedCodeFrame
+            self.frame_manager.show_frame(SchedCodeFrame)
 
     def show_add_employee_screen(self):
         AddEmployeeFrame(self)
