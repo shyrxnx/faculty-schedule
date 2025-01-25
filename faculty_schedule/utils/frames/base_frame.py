@@ -12,6 +12,15 @@ class BaseFrame(ctk.CTkFrame):
         title_label.grid(row=row, column=column, columnspan=columnspan, sticky="nsew", padx=padx, pady=pady)
         return title_label
 
+    def create_back_button(self, text="Back", font=("Arial", 14, "bold"), row=0, column=0, padx=15, pady=15):
+        back_button = ctk.CTkButton(self, text=text, font=font, fg_color="red", text_color="white", command=self.go_back)
+        back_button.grid(row=row, column=column, sticky="nw", padx=padx, pady=pady)
+        return back_button
+
+    def go_back(self):
+        if self.frame_manager:
+            self.frame_manager.go_back()
+
     def create_buttons(self, button_texts, row_start=1, column_start=0):
         buttons = []
         for i, text in enumerate(button_texts):
@@ -78,12 +87,3 @@ class BaseFrame(ctk.CTkFrame):
         self.grid_rowconfigure(7, weight=1)
         self.grid_columnconfigure(0, weight=0)  # Left column (buttons)
         self.grid_columnconfigure(1, weight=1)  # Right column (table and search bar)
-
-    def populate_tree(self, alist):
-        # Clear existing data from the Treeview
-        for item in self.table.get_children():
-            self.table.delete(item)
-
-        # Insert new data (sorted)
-        for item in alist:
-            self.table.insert("", "end", values=item)
