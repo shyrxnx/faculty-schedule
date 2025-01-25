@@ -1,6 +1,7 @@
 from faculty_schedule.utils.frames import BaseFrame
 from .add_employee_frame import AddEmployeeFrame
 from .edit_employee_frame import EditEmployeeFrame
+from .delete_employee_frame import DeleteEmployeeFrame
 
 
 class HomeFrame(BaseFrame):
@@ -43,7 +44,7 @@ class HomeFrame(BaseFrame):
         elif button_text == "Edit Employee":
             self.show_edit_employee_screen()
         elif button_text == "Delete Employee":
-            pass
+            self.show_delete_employee_screen()
 
     def view_employee(self):
         print("Viewing Employee...")  # Placeholder for actual functionality
@@ -55,4 +56,4 @@ class HomeFrame(BaseFrame):
         EditEmployeeFrame(self)
 
     def show_delete_employee_screen(self):
-        print("Showing Delete Employee Screen...")  # Placeholder for actual functionality
+        DeleteEmployeeFrame(self)
