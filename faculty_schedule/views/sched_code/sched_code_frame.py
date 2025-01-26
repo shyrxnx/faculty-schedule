@@ -2,6 +2,7 @@ from faculty_schedule.utils.frames import BaseFrame
 from .add_sched_code_frame import AddSchedCodeFrame
 from .edit_sched_code_frame import EditSchedCodeFrame
 from .delete_sched_code_frame import DeleteSchedCodeFrame
+from ..schedules import ScheduleFrame
 
 
 class SchedCodeFrame(BaseFrame):
@@ -20,6 +21,7 @@ class SchedCodeFrame(BaseFrame):
 
         # Buttons
         button_texts = [
+            "View Schedule Code",
             "Add Schedule Code",
             "Edit Schedule Code",
             "Delete Schedule Code",
@@ -38,12 +40,19 @@ class SchedCodeFrame(BaseFrame):
 
     # Button click logic - This should probably be in the Controller
     def on_button_click(self, button_text):
-        if button_text == "Add Schedule Code":
+        if button_text == "View Schedule Code":
+            self.view_schedule_code()
+        elif button_text == "Add Schedule Code":
             self.show_add_schedule_code_screen()
         elif button_text == "Edit Schedule Code":
             self.show_edit_schedule_code_screen()
         elif button_text == "Delete Schedule Code":
             self.show_delete_schedule_code_screen()
+
+    def view_schedule_code(self):
+        if self.frame_manager:
+            # Use the frame manager to navigate to SchedCodeFrame
+            self.frame_manager.show_frame(ScheduleFrame)
 
     def show_add_schedule_code_screen(self):
         AddSchedCodeFrame(self)
