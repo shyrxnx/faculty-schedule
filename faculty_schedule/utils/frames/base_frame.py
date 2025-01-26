@@ -1,19 +1,24 @@
 import customtkinter as ctk
 from tkinter import ttk
 
-
 class BaseFrame(ctk.CTkFrame):
     def __init__(self, master=None, frame_manager=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.frame_manager = frame_manager
 
-        # Title
-        self.create_title_label("Faculty Scheduler")
-
     def create_title_label(self, text, font=("Arial", 24, "bold"), row=0, column=0, columnspan=1, padx=10, pady=10):
         title_label = ctk.CTkLabel(self, text=text, font=font)
         title_label.grid(row=row, column=column, columnspan=columnspan, sticky="nsew", padx=padx, pady=pady)
         return title_label
+
+    def create_back_button(self, text="Back", font=("Arial", 14, "bold"), row=0, column=0, padx=15, pady=15):
+        back_button = ctk.CTkButton(self, text=text, font=font, fg_color="red", text_color="white", command=self.go_back)
+        back_button.grid(row=row, column=column, sticky="nw", padx=padx, pady=pady)
+        return back_button
+
+    def go_back(self):
+        if self.frame_manager:
+            self.frame_manager.go_back()
 
     def create_buttons(self, button_texts, row_start=1, column_start=0):
         buttons = []
@@ -36,8 +41,7 @@ class BaseFrame(ctk.CTkFrame):
         print(f"Dropdown selected: {selected_value}")
         # Add any additional handling logic here
 
-    def create_search_bar(self, placeholder_text="Search...", font=("Arial", 12), row=0, column=1, padx=(20, 10),
-                          pady=10):
+    def create_search_bar(self, placeholder_text="Search...", font=("Arial", 12), row=0, column=1, padx=(20, 10), pady=10):
         search_entry = ctk.CTkEntry(self, font=font, placeholder_text=placeholder_text)
         search_entry.grid(row=row, column=column, sticky="nsew", padx=padx, pady=pady)
         return search_entry
@@ -73,20 +77,12 @@ class BaseFrame(ctk.CTkFrame):
             table.column(col, anchor="center", width=width)
         return table
 
-    def set_layout(self, button_texts):
-        # Configure layout for the frame
-        # self.grid_rowconfigure(0, weight=0)  # Title row
-        # for i in range(1, len(button_texts)):  # Button and dropdown rows
-        #     self.grid_rowconfigure(i, weight=0)
+    def set_layout(self, button_text):
         self.grid_rowconfigure(7, weight=1)
         self.grid_columnconfigure(0, weight=0)  # Left column (buttons)
-        self.grid_columnconfigure(1, weight=1)  # Right column (table and search bar)
+        self.grid_columnconfigure(1, weight=1)  # Right column (table, search bar, label)
 
-    def populate_tree(self, alist):
-        # Clear existing data from the Treeview
-        for item in self.table.get_children():
-            self.table.delete(item)
-
-        # Insert new data (sorted)
-        for item in alist:
-            self.table.insert("", "end", values=item)
+    def create_info_label(self, text, row=0, column=1, padx=(20, 10), pady=10):
+        label = ctk.CTkLabel(self, text=text, font=("Arial", 14, "bold"), text_color="white")
+        label.grid(row=row, column=column, sticky="w", padx=padx, pady=pady)
+        return label

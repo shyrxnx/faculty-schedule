@@ -1,0 +1,37 @@
+import customtkinter as ctk
+
+
+class DeleteSchedCodeFrame(ctk.CTkToplevel):
+    def __init__(self, master=None, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.title("Delete Schedule Code")
+
+        # Center the pop-up on the screen
+        window_width = 275
+        window_height = 100
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x_position = int((screen_width - window_width) / 2)
+        y_position = int((screen_height - window_height) / 2)
+
+        self.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+
+        # Ensure the pop-up is on top
+        self.lift()
+        self.focus_force()
+        self.grab_set()
+
+        # Create a frame for sched code and input
+        sched_code_frame = ctk.CTkFrame(self, width=15)
+        sched_code_frame.pack(pady=10, anchor="w", padx=10)
+
+        # Label for sched code
+        ctk.CTkLabel(sched_code_frame, text="Enter Schedule Code:", width=100).pack(side="left", padx=0)
+        # Entry field for sched code
+        self.input_code = ctk.CTkEntry(sched_code_frame)
+        self.input_code.pack(side="left", padx=10)
+
+        # Submit button centered at the bottom
+        submit_button = ctk.CTkButton(self, text="Submit")
+        submit_button.pack(pady=10, anchor="center")
