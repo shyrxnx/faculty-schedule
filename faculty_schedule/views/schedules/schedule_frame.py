@@ -44,7 +44,7 @@ class ScheduleFrame(BaseFrame):
         AddSchedFrame(self,self.sched_id.id)
 
     def show_edit_schedule_screen(self):
-        EditSchedFrame(self)
+        EditSchedFrame(self,self.sched_id.id)
 
     def show_delete_schedule_screen(self):
         DeleteSchedFrame(self)

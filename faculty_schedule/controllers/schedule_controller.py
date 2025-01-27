@@ -150,8 +150,8 @@ class ScheduleController(BaseController):
         schedule_data = schedule_data.iloc[0]
         # Ensure 'code' is treated as a string
         schedule_data['code'] = str(schedule_data['code'])
-
-        slots_data = slots_df[slots_df['code'] == schedule_id] if not slots_df.empty else pd.DataFrame()
+        schedule_id = schedule_data['id']
+        slots_data = slots_df[slots_df['schedule_id'] == schedule_id] if not slots_df.empty else pd.DataFrame()
         slots = [
             ScheduleSlot(
                 schedule_id=slot['schedule_id'],
@@ -304,5 +304,18 @@ class ScheduleController(BaseController):
 
         return True
 
-    
+    def get_schedule_slots(self, schedule_code: str):
+        """Retrieve all schedule slots for a given schedule code."""
+        slots_df = self._load_df(self.slots_file)
+        schedules_df = self._load_df(self.schedules_file)
+
+        schedule_data = schedules_df[schedules_df['id'] == schedule_code]
+        if schedule_data.empty:
+            raise NotFoundError(f'Schedule with code {schedule_code} not found')
+
+        schedule_id = schedule_data.iloc[0]['id']
+        slots_data = slots_df[slots_df['schedule_id'] == schedule_id] if not slots_df.empty else pd.DataFrame()
+
+        return slots_data
+
 
