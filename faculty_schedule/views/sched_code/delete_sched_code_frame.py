@@ -1,10 +1,15 @@
 import customtkinter as ctk
+from tkinter import messagebox
+from ...controllers import ScheduleController
 
 
 class DeleteSchedCodeFrame(ctk.CTkToplevel):
-    def __init__(self, master=None, *args, **kwargs):
+    def __init__(self, master=None, sched_code = None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.title("Delete Schedule Code")
+        self.controller = ScheduleController()
+        self.sched_code = sched_code.id
+        
 
         # Center the pop-up on the screen
         window_width = 275
@@ -27,11 +32,18 @@ class DeleteSchedCodeFrame(ctk.CTkToplevel):
         sched_code_frame.pack(pady=10, anchor="w", padx=10)
 
         # Label for sched code
-        ctk.CTkLabel(sched_code_frame, text="Enter Schedule Code:", width=100).pack(side="left", padx=0)
-        # Entry field for sched code
-        self.input_code = ctk.CTkEntry(sched_code_frame)
-        self.input_code.pack(side="left", padx=10)
-
+        ctk.CTkLabel(sched_code_frame, text=f"Schedule Code: {self.sched_code}", width=100).pack(side="left", padx=0)
+        
         # Submit button centered at the bottom
-        submit_button = ctk.CTkButton(self, text="Submit")
+        submit_button = ctk.CTkButton(self, text="Confirm", command=self.confirm)
         submit_button.pack(pady=10, anchor="center")
+
+    def confirm(self):
+        try:
+            self.controller.delete_schedule(self.sched_code)
+            messagebox.showinfo("Success", f"Schedule Code {self.sched_code} deleted successfully!")
+            # Refresh the table in the main frame
+            self.master.populate_table()
+            self.destroy()  # Close the AddEmployeeFrame after success
+        except Exception as e:
+            messagebox.showerror("Error", str(e))

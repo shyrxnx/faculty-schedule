@@ -35,13 +35,13 @@ class ScheduleController(BaseController):
         if schedule_id:
             existing = schedules_df[
                 (schedules_df['employee_id'] == employee_id) &
-                (schedules_df['code'].str.lower() == code_lower) &
+                (schedules_df['code'].astype(str).str.lower() == code_lower) &
                 (schedules_df['id'] != schedule_id)
                 ] if not schedules_df.empty else pd.DataFrame()
         else:
             existing = schedules_df[
                 (schedules_df['employee_id'] == employee_id) &
-                (schedules_df['code'].str.lower() == code_lower)
+                (schedules_df['code'].astype(str).str.lower() == code_lower)
                 ] if not schedules_df.empty else pd.DataFrame()
 
         if not existing.empty:
@@ -142,14 +142,16 @@ class ScheduleController(BaseController):
         schedules_df = self._load_df(self.schedules_file)
         slots_df = self._load_df(self.slots_file)
 
-        schedule_data = schedules_df[schedules_df['id'] == schedule_id]
+        schedule_data = schedules_df[schedules_df['code'] == schedule_id]
 
         if schedule_data.empty:
             raise NotFoundError(f'Schedule with id {schedule_id} not found')
 
         schedule_data = schedule_data.iloc[0]
+        # Ensure 'code' is treated as a string
+        schedule_data['code'] = str(schedule_data['code'])
 
-        slots_data = slots_df[slots_df['schedule_id'] == schedule_id] if not slots_df.empty else pd.DataFrame()
+        slots_data = slots_df[slots_df['code'] == schedule_id] if not slots_df.empty else pd.DataFrame()
         slots = [
             ScheduleSlot(
                 schedule_id=slot['schedule_id'],
@@ -269,11 +271,11 @@ class ScheduleController(BaseController):
 
         return True
 
-    def delete_schedule(self, schedule_id: int) -> bool:
+    def delete_schedule(self,schedule_id: int) -> bool:
         """Delete a schedule and all its associated slots.
 
         Args:
-            schedule_id (int): ID of the schedule to delete
+            schedule_code (int): ID of the schedule to delete
 
         Returns:
             bool: True if the schedule was successfully deleted
@@ -285,14 +287,22 @@ class ScheduleController(BaseController):
         slots_df = self._load_df(self.slots_file)
 
         if schedule_id not in schedules_df['id'].values:
-            raise NotFoundError(f'Schedule with id {schedule_id} not found')
+            raise NotFoundError(f'Schedule with code {schedule_id} not found')
 
         # Delete associated slots first
-        slots_df = slots_df[slots_df['schedule_id'] != schedule_id]
-        self._save_df(slots_df, self.slots_file)
+        print(schedule_id)
+        try:
+            slots_df = slots_df[slots_df['schedule_id'] != schedule_id]
+            self._save_df(slots_df, self.slots_file)
+        except Exception as e:
+            # Catch any other exceptions and print the error
+            print(f"An unexpected error occurred: {e}")
 
         # Delete schedule
         schedules_df = schedules_df[schedules_df['id'] != schedule_id]
         self._save_df(schedules_df, self.schedules_file)
 
         return True
+
+    
+

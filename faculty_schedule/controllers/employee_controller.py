@@ -66,7 +66,7 @@ class EmployeeController(BaseController):
             Schedule(**{
                 'id': row['id'],
                 'employee_id': row['employee_id'],
-                'code': row['code'],
+                'code': str(row['code']),
                 'description': row['description']
             })
             for _, row in schedules_df[schedules_df['employee_id'] == employee_id].iterrows()

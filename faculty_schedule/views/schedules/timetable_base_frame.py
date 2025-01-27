@@ -2,7 +2,7 @@ import tkinter as tk
 
 
 class TimetableCanvas(tk.Canvas):
-    def __init__(self, master, columns, row_height=52, column_width=182, *args, **kwargs):
+    def __init__(self, master, columns, row_height=30, column_width=120, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
         # Canvas Configurations
