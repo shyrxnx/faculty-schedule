@@ -1,11 +1,14 @@
 import customtkinter as ctk
 from tkinter import ttk
+from ...controllers import ScheduleController
 
 
 class AddSchedFrame(ctk.CTkToplevel):
-    def __init__(self, master=None, *args, **kwargs):
+    def __init__(self, master=None, sched_id = None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
+        self.sched_id= sched_id
+        self.controller = ScheduleController()
         self.title("Add Schedule")
 
         # Center the pop-up on the screen
@@ -80,7 +83,21 @@ class AddSchedFrame(ctk.CTkToplevel):
 
     def submit_schedule(self):
         date = self.input_date.get()
-        start_time = f"{self.input_start_hour.get()}:{self.input_start_minute.get()}"
-        end_time = f"{self.input_end_hour.get()}:{self.input_end_minute.get()}"
+        start_time = f"{self.input_start_hour.get().zfill(2)}:{self.input_start_minute.get().zfill(2)}"
+        end_time = f"{self.input_end_hour.get().zfill(2)}:{self.input_end_minute.get().zfill(2)}"
+
         self.master.add_schedule(date, start_time, end_time)
+
+        try:
+            self.controller.add_schedule_slot({
+                'schedule_id': self.sched_id,
+                'day': date,  # Map date to the correct Day enum if necessary
+                'start_time': start_time,
+                'end_time': end_time,
+                'detail': 'Nothing',  # Example detail, can be dynamic
+            })
+            print("Schedule slot added successfully!")
+        except Exception as e:
+            print(f"Failed to add schedule slot: {e}")
+
         self.destroy()

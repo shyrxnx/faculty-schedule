@@ -55,9 +55,10 @@ class SchedCodeFrame(BaseFrame):
             self.show_delete_schedule_code_screen()
 
     def view_schedule_code(self):
-        if self.frame_manager:
+        selected_sched_code = self.get_selected_sched_code()
+        if selected_sched_code:
             # Use the frame manager to navigate to SchedCodeFrame
-            self.frame_manager.show_frame(ScheduleFrame)
+            self.frame_manager.show_frame(ScheduleFrame, schedid=selected_sched_code)
 
     def show_add_schedule_code_screen(self):
         id = self.employee.id

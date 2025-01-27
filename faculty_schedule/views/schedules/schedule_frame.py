@@ -3,12 +3,16 @@ from .timetable_base_frame import TimetableCanvas
 from .add_schedule_frame import AddSchedFrame
 from .edit_schedule_frame import EditSchedFrame
 from .delete_schedule_frame import DeleteSchedFrame
+from ...controllers import ScheduleController  # Import your controller here
+
 
 
 class ScheduleFrame(BaseFrame):
-    def __init__(self, master=None, frame_manager=None, *args, **kwargs):
+    def __init__(self, master=None, frame_manager=None, schedid = None, *args, **kwargs):
         super().__init__(master, frame_manager, *args, **kwargs)
+        self.sched_id = schedid
         self.frame_manager = frame_manager
+        self.controller = ScheduleController()
         # Back Button
         self.create_back_button()
         # Buttons
@@ -37,7 +41,7 @@ class ScheduleFrame(BaseFrame):
             self.show_delete_schedule_screen()
 
     def show_add_schedule_screen(self):
-        AddSchedFrame(self)
+        AddSchedFrame(self,self.sched_id.id)
 
     def show_edit_schedule_screen(self):
         EditSchedFrame(self)
