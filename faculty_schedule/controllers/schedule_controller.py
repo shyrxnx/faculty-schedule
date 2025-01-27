@@ -212,6 +212,63 @@ class ScheduleController(BaseController):
 
         return slot
 
+    def edit_schedule_slot(self, slot_id: int, data: ScheduleSlot) -> ScheduleSlot:
+        """Edit an existing schedule slot.
+
+        Args:
+            slot_id (int): ID of the schedule slot to edit
+            data (dict): Dictionary containing:
+                - day: Day enum value
+                - start_time: Start time in HH:MM format
+                - end_time: End time in HH:MM format
+                - detail: Description of the schedule slot
+
+        Returns:
+            ScheduleSlot: The edited schedule slot object
+
+        Raises:
+            ValidationError: If the slot data is invalid or conflicts with existing slots
+            NotFoundError: If the slot doesn't exist
+        """
+
+        slots_df = self._load_df(self.slots_file)
+
+        if slot_id not in slots_df['id'].values:
+            raise NotFoundError(f'Schedule slot with id {slot_id} not found')
+
+        slot = ScheduleSlot.model_validate(data)
+
+        slots_df.loc[slots_df['id'] == slot_id, 'day'] = slot.day.value
+        slots_df.loc[slots_df['id'] == slot_id, 'start_time'] = slot.start_time.strftime('%H:%M')
+        slots_df.loc[slots_df['id'] == slot_id, 'end_time'] = slot.end_time.strftime('%H:%M')
+        slots_df.loc[slots_df['id'] == slot_id, 'detail'] = slot.detail
+
+        self._save_df(slots_df, self.slots_file)
+
+        return slot
+
+    def delete_schedule_slot(self, slot_id: int) -> bool:
+        """Delete a schedule slot.
+
+        Args:
+            slot_id (int): ID of the schedule slot to delete
+
+        Returns:
+            bool: True if the slot was successfully deleted
+
+        Raises:
+            NotFoundError: If the slot doesn't exist
+        """
+        slots_df = self._load_df(self.slots_file)
+
+        if slot_id not in slots_df['id'].values:
+            raise NotFoundError(f'Schedule slot with id {slot_id} not found')
+
+        slots_df = slots_df[slots_df['id'] != slot_id]
+        self._save_df(slots_df, self.slots_file)
+
+        return True
+
     def delete_schedule(self, schedule_id: int) -> bool:
         """Delete a schedule and all its associated slots.
 
