@@ -31,6 +31,11 @@ class ScheduleFrame(BaseFrame):
         # Set layout
         self.set_layout(button_texts)
 
+        # Clear canvas first
+        #this doesnt work help
+        self.populate_slots()
+
+
     # Button click logic - This should probably be in the Controller
     def on_button_click(self, button_text):
         if button_text == "Add Schedule":
@@ -47,7 +52,7 @@ class ScheduleFrame(BaseFrame):
         EditSchedFrame(self,self.sched_id.id)
 
     def show_delete_schedule_screen(self):
-        DeleteSchedFrame(self)
+        DeleteSchedFrame(self,self.sched_id.id)
 
     def add_schedule(self, day, start_time, end_time):
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -59,8 +64,25 @@ class ScheduleFrame(BaseFrame):
         # Calculate start and end rows
         start_row = start_hour - 7 + (0.5 if start_minute == 30 else 0)
         end_row = end_hour - 7 + (0.5 if end_minute == 30 else 0)
-
+        
+        print(f"Shading from row {int(start_row * 2)} to {int(end_row * 2)}")  # Debugging row range
         # Shade rows in the timetable
         # Note: Shading for only half of a row is not working
         for row in range(int(start_row * 2), int(end_row * 2)):
+            
             self.timetable_canvas.shade_row(row // 2 + 1, full=False, columns=[day_index], color="#32CD32")
+        
+        
+
+    def populate_slots(self):
+        # self.add_schedule("Monday","07:00","09:00")
+        slot_data = self.controller.get_schedule_slots(self.sched_id.id)
+        print("Populating slots with data:", slot_data)
+
+        for _, row in slot_data.iterrows():
+            try:
+                self.add_schedule(row['day'], row['start_time'], row['end_time'])
+            except Exception as e:
+                print(f"Error adding schedule: {e}")
+
+        

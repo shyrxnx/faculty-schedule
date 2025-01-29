@@ -9,12 +9,14 @@ class EditSchedFrame(ctk.CTkToplevel):
     def __init__(self, master=None,schedule_code = None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.title("Edit Schedule")
+        self.master = master
+
         self.controller = ScheduleController()
         self.schedule_code = schedule_code
 
         # Center the pop-up on the screen
         window_width = 300
-        window_height = 200
+        window_height = 250
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         x_position = int((screen_width - window_width) / 2)
@@ -136,6 +138,8 @@ class EditSchedFrame(ctk.CTkToplevel):
             # Call the edit_schedule_slot function
             updated_slot = self.controller.edit_schedule_slot(self.selected_slot_id, updated_data)
             print(f"Slot updated successfully: {updated_slot}")
+            self.master.populate_slots()
+            
             self.destroy()
 
             # Optionally, show a success message to the user

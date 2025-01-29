@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import ttk
 from ...controllers import ScheduleController
+from tkinter import messagebox
 
 
 class AddSchedFrame(ctk.CTkToplevel):
@@ -85,8 +86,11 @@ class AddSchedFrame(ctk.CTkToplevel):
         date = self.input_date.get()
         start_time = f"{self.input_start_hour.get().zfill(2)}:{self.input_start_minute.get().zfill(2)}"
         end_time = f"{self.input_end_hour.get().zfill(2)}:{self.input_end_minute.get().zfill(2)}"
+        
+        
 
-        self.master.add_schedule(date, start_time, end_time)
+        # self.master.add_schedule(date, start_time, end_time)
+
 
         try:
             self.controller.add_schedule_slot({
@@ -98,6 +102,7 @@ class AddSchedFrame(ctk.CTkToplevel):
             })
             print("Schedule slot added successfully!")
         except Exception as e:
-            print(f"Failed to add schedule slot: {e}")
-
+            messagebox.showerror(f"Failed to add schedule slot: {e}")
+        #but this work
+        self.master.populate_slots()
         self.destroy()

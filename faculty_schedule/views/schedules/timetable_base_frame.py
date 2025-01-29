@@ -24,6 +24,9 @@ class TimetableCanvas(tk.Canvas):
         # Draw the timetable grid
         self.create_table()
 
+        # Bind resize event
+        self.bind("<Configure>", self.on_resize)
+
     def create_table(self):
         # Draw headers
         for col_idx, column_name in enumerate(self.columns):
@@ -34,7 +37,7 @@ class TimetableCanvas(tk.Canvas):
                              font=self.header_font)
 
         # Draw rows and apply row styles
-        for row_idx in range(20):  # Adjust the number of rows as needed (e.g., 20 rows)
+        for row_idx in range(14):  # Adjust the number of rows as needed (e.g., 20 rows)
             y1 = self.row_height + row_idx * self.row_height
             y2 = y1 + self.row_height
             # Time range format (7:00 - 8:00, 8:00 - 9:00, ...)
@@ -50,15 +53,26 @@ class TimetableCanvas(tk.Canvas):
                 else:
                     self.create_rectangle(x1, y1, x2, y2, fill=self.cell_bg, outline="white")
 
+    def on_resize(self, event):
+        # Recalculate the column width and row height based on window size
+        new_width = event.width
+        new_height = event.height
+
+        # Dynamically adjust the column width and row height based on the window size
+        self.column_width = new_width // len(self.columns)
+        self.row_height = new_height // 14  # Assuming you want 20 rows
+
+        # Redraw the table with the updated dimensions
+        self.delete("all")
+        self.create_table()
+
     # The shading for half row is not working.
     def shade_row(self, row, full=True, columns=None, color=None):
         """
         Shade rows in full or partially. Rows are indexed from 1.
-        :param row: The row number to shade (1-based index).
-        :param full: If True, shade the entire row. If False, shade specific columns.
-        :param columns: List of column indices to shade if full=False.
-        :param color: The color to use for shading.
         """
+        
+
         y1 = self.row_height + (row - 1) * self.row_height
         y2 = y1 + self.row_height
         color = color or (self.shade_full_bg if full else self.shade_half_bg)
@@ -67,10 +81,19 @@ class TimetableCanvas(tk.Canvas):
             for col_idx in range(len(self.columns)):
                 x1 = col_idx * self.column_width
                 x2 = x1 + self.column_width
-                if col_idx > 0:  # Exclude the time column
-                    self.create_rectangle(x1, y1, x2, y2, fill=color, outline=self.cell_bg)
+                if col_idx > 0:
+                    # Delete any existing shapes in the area first
+                    self.delete("shade_{}_{}".format(row, col_idx))
+                    rect = self.create_rectangle(x1, y1, x2, y2, fill=color, outline=self.cell_bg)
+                    self.itemconfig(rect, tags="shade_{}_{}".format(row, col_idx))
         else:
             for col_idx in columns or []:
                 x1 = col_idx * self.column_width
                 x2 = x1 + self.column_width
-                self.create_rectangle(x1, y1, x2, y2, fill=color, outline=self.cell_bg)
+                self.delete("shade_{}_{}".format(row, col_idx))
+                rect = self.create_rectangle(x1, y1, x2, y2, fill=color, outline=self.cell_bg)
+                self.itemconfig(rect, tags="shade_{}_{}".format(row, col_idx))
+
+    
+
+        
