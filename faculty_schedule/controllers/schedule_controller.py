@@ -126,6 +126,72 @@ class ScheduleController(BaseController):
         self._save_df(df, self.schedules_file)
 
         return schedule
+    
+    
+    def update_schedule(self, schedule_id: int, data: dict) -> Schedule:
+        """Update an existing schedule for an employee.
+
+        Args:
+            schedule_id (int): ID of the schedule to update
+            data (dict): Dictionary containing:
+                - employee_id: ID of the employee (optional)
+                - code: Schedule code (optional)
+                - description: Schedule description (optional)
+
+        Returns:
+            Schedule: The updated schedule object
+
+        Raises:
+            NotFoundError: If the schedule with the given ID doesn't exist
+            ValidationError: If the schedule data is invalid
+        """
+        schedules_df = self._load_df(self.schedules_file)
+        slots_df = self._load_df(self.slots_file)
+        
+        # Check if the schedule exists
+        schedule_data = schedules_df[schedules_df['id'] == schedule_id]
+        if schedule_data.empty:
+            raise NotFoundError(f'Schedule with id {schedule_id} not found')
+
+        # Extract the new data
+        employee_id = data.get('employee_id', schedule_data.iloc[0]['employee_id'])
+        code = data.get('code', schedule_data.iloc[0]['code'])
+        description = data.get('description', schedule_data.iloc[0]['description'])
+
+        # Validate the updated data
+        self._validate_schedule_data(employee_id, code, schedule_id)
+
+        # Update the schedule in the dataframe
+        schedules_df.loc[schedules_df['id'] == schedule_id, 'employee_id'] = employee_id
+        schedules_df.loc[schedules_df['id'] == schedule_id, 'code'] = code.strip()
+        schedules_df.loc[schedules_df['id'] == schedule_id, 'description'] = description.strip()
+
+        # Save the updated schedule dataframe
+        self._save_df(schedules_df, self.schedules_file)
+
+        # Retrieve existing details (schedule slots)
+        existing_slots_data = slots_df[slots_df['schedule_id'] == schedule_id] if not slots_df.empty else pd.DataFrame()
+        existing_slots = [
+            ScheduleSlot(
+                schedule_id=slot['schedule_id'],
+                day=Day(slot['day']),
+                start_time=datetime.strptime(slot['start_time'], '%H:%M').time(),
+                end_time=datetime.strptime(slot['end_time'], '%H:%M').time(),
+                detail=slot['detail']
+            )
+            for _, slot in existing_slots_data.iterrows()
+        ]
+
+        # Rebuild and return the updated schedule object, including its existing details
+        updated_schedule_data = schedules_df[schedules_df['id'] == schedule_id].iloc[0]
+        return Schedule(
+            id=updated_schedule_data['id'],
+            employee_id=updated_schedule_data['employee_id'],
+            code=updated_schedule_data['code'],
+            description=updated_schedule_data['description'],
+            details=existing_slots  # Keep existing details (schedule slots)
+        )
+
 
     def get_schedule(self, schedule_id: int) -> Schedule:
         """Retrieve a schedule by its ID, including all schedule slots.
@@ -143,7 +209,7 @@ class ScheduleController(BaseController):
         slots_df = self._load_df(self.slots_file)
 
         schedule_data = schedules_df[schedules_df['code'] == schedule_id]
-
+        print(schedule_data)
         if schedule_data.empty:
             raise NotFoundError(f'Schedule with id {schedule_id} not found')
 

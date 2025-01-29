@@ -65,6 +65,7 @@ class DeleteSchedFrame(ctk.CTkToplevel):
             messagebox.Message(f"Slot deleted successfully: {deleted_slot}")
             self.master.populate_slots()
 
+
             self.destroy()
 
             

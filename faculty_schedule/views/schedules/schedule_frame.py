@@ -33,7 +33,8 @@ class ScheduleFrame(BaseFrame):
 
         # Clear canvas first
         #this doesnt work help
-        self.populate_slots()
+        self.after(50, self.populate_slots)  # Delay by 100ms or adjust as needed
+
 
 
     # Button click logic - This should probably be in the Controller
@@ -53,6 +54,7 @@ class ScheduleFrame(BaseFrame):
 
     def show_delete_schedule_screen(self):
         DeleteSchedFrame(self,self.sched_id.id)
+        
 
     def add_schedule(self, day, start_time, end_time):
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -75,6 +77,8 @@ class ScheduleFrame(BaseFrame):
         
 
     def populate_slots(self):
+        self.timetable_canvas.delete("all")
+        self.timetable_canvas.create_table()
         # self.add_schedule("Monday","07:00","09:00")
         slot_data = self.controller.get_schedule_slots(self.sched_id.id)
         print("Populating slots with data:", slot_data)
@@ -84,5 +88,7 @@ class ScheduleFrame(BaseFrame):
                 self.add_schedule(row['day'], row['start_time'], row['end_time'])
             except Exception as e:
                 print(f"Error adding schedule: {e}")
+        self.timetable_canvas.update_idletasks()
+        self.timetable_canvas.update()
 
         

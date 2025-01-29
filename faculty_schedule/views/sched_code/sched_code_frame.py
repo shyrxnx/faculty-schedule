@@ -25,6 +25,7 @@ class SchedCodeFrame(BaseFrame):
         button_texts = [
             "View Schedule Code",
             "Add Schedule Code",
+            "Edit Schedule Code",
             "Delete Schedule Code",
         ]
         self.create_buttons(button_texts)
@@ -75,18 +76,8 @@ class SchedCodeFrame(BaseFrame):
         
 
     def show_edit_schedule_code_screen(self):
-        id = self.employee.id
-
-        add_schedule_code_frame = AddSchedCodeFrame(self,id)
-
-        def on_close():
-        # Refresh the table after the frame is closed
-            self.populate_table()
-            add_schedule_code_frame.destroy()
-
-        # Attach the on_close method to execute when the frame is destroyed
-        add_schedule_code_frame.protocol("WM_DELETE_WINDOW", on_close)
-        EditSchedCodeFrame(self)
+        sched_id = self.get_selected_sched_code()
+        EditSchedCodeFrame(self,sched_id)
 
     def show_delete_schedule_code_screen(self):
         
